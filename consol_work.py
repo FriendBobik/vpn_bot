@@ -1,33 +1,43 @@
-import paramiko
-import pyotp
+def get_profil(name):
+ import paramiko
+ import time
+ client = paramiko.SSHClient()
+ client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
-# Установка параметров для подключения SSH
-host = '95.214.11.40'
-port = 22
-username = 'root'
-password = 'your_password'  # или используйте ключи для аутентификации
+ with open('ip.txt', 'r') as file:
+    ip = file.read().strip()
+ with open('password_server.txt', 'r') as file:
+    password_server = file.read().strip()
 
-# Создание объекта SSH клиента
-client = paramiko.SSHClient()
 
-# Игнорирование проверки ключа хоста (для простоты, в реальном использовании это должно быть безопасно)
-client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+ client.connect(ip, username='root', password=password_server)
 
-try:
-    # Генерация OTP
-    totp = pyotp.TOTP('your_secret_key')  # Замените 'your_secret_key' на ваш секретный ключ
-    otp = totp.now()
 
-    # Подключение к серверу SSH с использованием OTP в качестве пароля
-    client.connect(hostname=host, port=port, username=username, password=otp)
+ ssh = client.invoke_shell()
+ #print(ssh.recv(3000))
+ time.sleep(1)
 
-    # Выполнение команды на удаленном сервере
-    stdin, stdout, stderr = client.exec_command('command_to_execute')
-    
-    # Получение вывода команды
-    output = stdout.read().decode()
-    print(output)
+ ssh.send("./wireguard-install.sh\n")
+ #print(ssh.recv(3000))
+ time.sleep(1)
 
-finally:
-    # Закрытие соединения SSH
-    client.close()
+ ssh.send("1\n")
+ #print(ssh.recv(3000))
+ time.sleep(1)
+
+ ssh.send(name+"\n")
+ #print(ssh.recv(3000))
+ time.sleep(1)
+
+
+ ssh.send("\n")
+ #print(ssh.recv(3000))
+ time.sleep(1)
+
+ ssh.send("\n")
+ #print(ssh.recv(3000))
+ time.sleep(1)
+
+ ssh.close()
+name="Test4"
+get_profil(name)
