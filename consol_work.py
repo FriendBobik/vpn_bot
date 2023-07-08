@@ -1,8 +1,14 @@
 def get_profil(name):
  import paramiko
  import time
+
+
+
  client = paramiko.SSHClient()
  client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+
+
+ print("get_profil")
 
  with open('ip.txt', 'r') as file:
     ip = file.read().strip()
@@ -38,6 +44,21 @@ def get_profil(name):
  #print(ssh.recv(3000))
  time.sleep(1)
 
+
+ sftp = client.open_sftp()
+ file_name = 'wg0-client-'+name+'.conf'
+ remote_file_path = '/root/'+file_name
+ local_file_path = '/Users/aboba/Desktop/vpn_bot2/ecom/'+file_name
+ sftp.get(remote_file_path, local_file_path)
+ sftp.close()
+
+
+
+
  ssh.close()
-name="Test4"
-get_profil(name)
+
+
+
+ 
+
+  
