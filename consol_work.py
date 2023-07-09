@@ -1,6 +1,8 @@
 def get_profil(name):
  import paramiko
  import time
+ from config import ip_server,password_server
+ 
 
 
 
@@ -8,13 +10,7 @@ def get_profil(name):
  client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
 
- with open('ip.txt', 'r') as file:
-    ip = file.read().strip()
- with open('password_server.txt', 'r') as file:
-    password_server = file.read().strip()
-
-
- client.connect(ip, username='root', password=password_server)
+ client.connect(ip_server, username='root', password=password_server)
 
 
  ssh = client.invoke_shell()
