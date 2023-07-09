@@ -2,7 +2,7 @@ def get_profil(name):
  import paramiko
  import time
  from config import ip_server,password_server
- 
+ global vpn_give
 
 
 
@@ -45,7 +45,7 @@ def get_profil(name):
  local_file_path = '/Users/aboba/Desktop/vpn_bot2/ecom/'+name+'.conf'
  sftp.get(remote_file_path, local_file_path)
  sftp.close()
-
+ vpn_give=True
 
 
 
