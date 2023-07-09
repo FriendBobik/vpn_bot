@@ -8,8 +8,6 @@ def get_profil(name):
  client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
 
- print("get_profil")
-
  with open('ip.txt', 'r') as file:
     ip = file.read().strip()
  with open('password_server.txt', 'r') as file:
@@ -21,28 +19,28 @@ def get_profil(name):
 
  ssh = client.invoke_shell()
  #print(ssh.recv(3000))
- time.sleep(1)
+ time.sleep(0.7)
 
  ssh.send("./wireguard-install.sh\n")
  #print(ssh.recv(3000))
- time.sleep(1)
+ time.sleep(0.7)
 
  ssh.send("1\n")
  #print(ssh.recv(3000))
- time.sleep(1)
+ time.sleep(0.7)
 
  ssh.send(name+"\n")
  #print(ssh.recv(3000))
- time.sleep(1)
+ time.sleep(0.7)
 
 
  ssh.send("\n")
  #print(ssh.recv(3000))
- time.sleep(1)
+ time.sleep(0.7)
 
  ssh.send("\n")
  #print(ssh.recv(3000))
- time.sleep(1)
+ time.sleep(0.7)
 
 
  sftp = client.open_sftp()
