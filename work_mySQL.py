@@ -1,5 +1,5 @@
 import pymysql
-from datetime import datetime
+from datetime import datetime, timedelta
 from config import host_sql, user_sql, password_sql, db_name_sql
 
 
@@ -23,11 +23,11 @@ def sql_create(name):
         cursor.execute(insert_query, values)
         connection.commit()
 
+
 def sql_check(name):
     connection = sql_connect()
     with connection.cursor() as cursor:
-        select_name = "SELECT id FROM `user`"
-        cursor.execute(select_name)
+        cursor.execute("SELECT id FROM user")
         rows = cursor.fetchall()
         profile_exists = 0
         i=0
@@ -41,15 +41,40 @@ def sql_check(name):
         return i
     else:
         return -1
-
-
-
-def sqlwork(name,vpn_give,data):
     
-    try:
-        sql_connect()
-        print ("successfully connected...")
-    except Exception as ex:
-        print ("Connection refused...")
-        print (ex)
+
+def sql_free_value(name):
+    connection = sql_connect()
+    with connection.cursor() as cursor:
+        query = "SELECT free_used FROM user WHERE id = %s"
+        cursor.execute(query, (name,))
+        result=cursor.fetchall()
+        return result[0]['free_used']
+
+def sql_free_date(name):
+    connection = sql_connect()
+    with connection.cursor() as cursor:
+        query = "SELECT data_free_used FROM user WHERE id = %s"
+        cursor.execute(query, (name,))
+        result=cursor.fetchall()
+        return result[0]['data_free_used']        
+
+def sql_change_free_value(name):
+    connection = sql_connect()
+    with connection.cursor() as cursor:
+        query = "UPDATE user SET free_used=1 WHERE id= %s"
+        cursor.execute(query, (name,))
+        connection.commit()
+
+def sql_change_free_date(name):
+    current_datetime = datetime.now()
+    future_datetime = current_datetime + timedelta(days=7)
+    connection = sql_connect()
+    with connection.cursor() as cursor:
+        query = "UPDATE user SET data_free_used=%s WHERE id= %s"
+        cursor.execute(query, (future_datetime, name,))
+        connection.commit()
+
+
+
 
