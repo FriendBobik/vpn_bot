@@ -42,7 +42,7 @@ def get_profil(name):
  sftp = client.open_sftp()
  file_name = 'wg0-client-'+name+'.conf'
  remote_file_path = '/root/'+file_name
- local_file_path = '/Users/aboba/Desktop/vpn_bot2/ecom/'+name+'.conf'
+ local_file_path = name+'.conf'
  sftp.get(remote_file_path, local_file_path)
  sftp.close()
  vpn_give=True

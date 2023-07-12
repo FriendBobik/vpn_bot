@@ -24,11 +24,11 @@ def get_text_messages(message, bot):
             sql_change_free_date(name)  #добавляем 7 дней бесплатного пользования
             get_profil(name)
             bot.send_message(message.from_user.id, "Готово:")
-            document = open('/Users/aboba/Desktop/vpn_bot2/ecom/'+name+'.conf', 'rb')
+            document = open(name+'.conf', 'rb')
             bot.send_document(message.chat.id, document)
         if sql_free_date(name) > datetime.now():
-            if os.path.exists('/Users/aboba/Desktop/vpn_bot2/ecom/'+name+'.conf'):
-                document = open('/Users/aboba/Desktop/vpn_bot2/ecom/'+name+'.conf', 'rb')
+            if os.path.exists(name+'.conf'):
+                document = open(name+'.conf', 'rb')
                 bot.send_message(message.from_user.id, "Ты уже генерировал профиль, вот он:")
                 bot.send_document(message.chat.id, document)
             else:
