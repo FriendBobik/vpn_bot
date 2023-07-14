@@ -1,3 +1,5 @@
+from work_mySQL import sql_free_value,sql_free_date
+from datetime import datetime, timedelta
 def get_profil(name):
  import paramiko
  import time
@@ -50,7 +52,9 @@ def get_profil(name):
 
 
  ssh.close()
-
+def delet_profil(name)
+ if int(sql_free_value(name))==1 and sql_free_date(name) > (datetime.now()+ timedelta(minutes=1)) and :
+ return 0
 
 
  

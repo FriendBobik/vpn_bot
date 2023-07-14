@@ -14,7 +14,8 @@ def get_text_messages(message, bot):
             sql_create(name)            #записываем пользователя в базу
 
 
-        bot.send_message(message.from_user.id, "Привет, напиши /free_vpn")
+        bot.send_message(message.from_user.id, "Привет, напиши /free_vpn") 
+        #тут надо добвать кнопочки,free, vpn,info,instr
 
     elif message.text == "/free_vpn":
         name = str(message.from_user.id)
@@ -22,19 +23,24 @@ def get_text_messages(message, bot):
             bot.send_message(message.from_user.id, "Почти готово, подожди 15 секунд")
             sql_change_free_value(name) #заменяем проверочное значение на 1
             sql_change_free_date(name)  #добавляем 7 дней бесплатного пользования
-            get_profil(name)
+            get_profil(name)            #получаем профиль
             bot.send_message(message.from_user.id, "Готово:")
             document = open(name+'.conf', 'rb')
             bot.send_document(message.chat.id, document)
-        if sql_free_date(name) > datetime.now():
-            if os.path.exists(name+'.conf'):
+        elif sql_free_date(name) > datetime.now(): #бесплатное время ещё не закончилось
+            if os.path.exists(name+'.conf'):       #дублируем файл
                 document = open(name+'.conf', 'rb')
                 bot.send_message(message.from_user.id, "Ты уже генерировал профиль, вот он:")
                 bot.send_document(message.chat.id, document)
             else:
-                bot.send_message(message.from_user.id, "Куда спешишь подожди")
-        
+                bot.send_message(message.from_user.id, "Куда спешишь подожди") #защита от перегрузки
+        elif sql_free_date(name) < datetime.now(): #бесплатное время ещё закончилось
+            bot.send_message(message.from_user.id, "Ты уже использовал бесплатный профиль, можешь воспользоваться обычным, по команде /vpn")
 
+    elif message.txt == "/vpn":
+        return 0
+    elif message.txt == "/info":
+        return 0
 
         
 
