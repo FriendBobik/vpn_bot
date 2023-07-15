@@ -52,9 +52,15 @@ def get_profil(name):
 
 
  ssh.close()
-def delet_profil(name)
+def delet_profil(name):
  if int(sql_free_value(name))==1 and sql_free_date(name) > (datetime.now()+ timedelta(minutes=1)) and :
  return 0
+name="1"
+get_profil(name)
+name="2"
+get_profil(name)
+name="3"
+get_profil(name)
 
 
  
