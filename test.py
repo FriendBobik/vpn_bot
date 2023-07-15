@@ -13,7 +13,7 @@ free_markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
 free_markup.add('Да', 'В главное меню')
 
 free_yes_markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-free_yes_markup.add('Ещё', 'В главное меню')
+free_yes_markup.add('Ещё', 'Бесплатный VPN действует до','В главное меню')
 
 info_markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
 info_markup.add('О проэкте', 'Правила', 'В главное меню')
@@ -23,6 +23,10 @@ back_markup.add('В главное меню')
 
 devices_markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
 devices_markup.add('Android','Iphone', 'Windows', 'MacOS', 'Linux', 'В главное меню')
+
+vpn_markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+vpn_markup.add('Оплата', 'VPN действует до','Промокод','В главное меню')
+##########################################
 
 
 @bot.message_handler(commands=['start'])
@@ -46,12 +50,11 @@ def menu_navigation(message):
     text10      = 'Скачай WireGuard с'
     text_free   = 'Ты можешь получить бесплатный профиль на 7 дней, чтобы проверить наш сервис.\nХочешь получить бесплатный профиль?'
     
+
     url_android = 'https://play.google.com/store/apps/details?id=com.wireguard.android&pli=1'
     url_iphone  = 'https://apps.apple.com/us/app/wireguard/id1441195209?ls=1'
     url_macos   = 'https://apps.apple.com/us/app/wireguard/id1451685025?ls=1&mt=12'
     url_site    = 'https://www.wireguard.com/install/'
-
-    
 
     def text_itog():
         bot.send_message(message.chat.id, text4, reply_markup=back_markup)
@@ -62,29 +65,49 @@ def menu_navigation(message):
         bot.send_message(message.chat.id, text9, reply_markup=back_markup)
 
 
-
-
     if message.text == 'В главное меню':
         bot.send_message(message.chat.id, "Возврат в главное меню", reply_markup=start_markup)
+    
+    #Стартовое меню
     elif message.text == 'Free':
         bot.send_message(message.chat.id, text_free, reply_markup=free_markup)
-    elif message.text == 'Да':
-        bot.send_message(message.chat.id, "Вы выбрали 'да'", reply_markup=free_yes_markup)
-   
+    elif message.text == 'VPN':
+        bot.send_message(message.chat.id, "Test VPN", reply_markup=vpn_markup)
     elif message.text == 'Информация':
         bot.send_message(message.chat.id, "Выберите один из пунктов", reply_markup=info_markup)
+    elif message.text == 'Инструкция':
+        bot.send_message(message.chat.id, "Test инструкция", reply_markup=devices_markup)
+    ##########################################
+
+
+
+    #Кнопка free
+    elif message.text == 'Да':
+        bot.send_message(message.chat.id, "Вы выбрали 'да'", reply_markup=free_yes_markup)
+    ##########################################
+    
+
+    #Кнопка VPN
+    elif message.text == 'Оплата':
+        bot.send_message(message.chat.id, "Test оплата", reply_markup=back_markup)
+    elif message.text == 'VPN действует до':
+        bot.send_message(message.chat.id, "Test VPN действует до", reply_markup=back_markup)
+    elif message.text == 'Промокод':
+        bot.send_message(message.chat.id, "Ведите промокод:", reply_markup=back_markup)
+    ##########################################
+
+
+    #Кнопка информация
     elif message.text == 'О проэкте':
         bot.send_message(message.chat.id, "Test о проэкте", reply_markup=back_markup)
     elif message.text == 'Правила':
         bot.send_message(message.chat.id, "Test правила", reply_markup=back_markup)
-    elif message.text == 'VPN':
-        bot.send_message(message.chat.id, "Test VPN", reply_markup=back_markup)
+    ##########################################
 
 
 
 
-    elif message.text == 'Инструкция':
-        bot.send_message(message.chat.id, "Test инструкция", reply_markup=devices_markup)
+    #Кнопка инструкция
     elif message.text == 'Android':
         message_text = f'{text1} [Play market]({url_android})\n{text3} [WireGuard]({url_site})\n{text2}'
         bot.send_message(message.chat.id, message_text, parse_mode='Markdown')
@@ -105,14 +128,12 @@ def menu_navigation(message):
         message_text = f'{text10} [официального сайта]({url_site})\n{text21}'
         bot.send_message(message.chat.id, message_text, parse_mode='Markdown')
         text_itog()
-    #elif message.text == '':
+    ##########################################
 
 
-
-
-
+    #Случайные сообщения
     else:
-        bot.send_message(message.chat.id, "Я не понимаю эту команду")
-
+        bot.send_message(message.chat.id, "Я не понимаю эту команду",reply_markup=start_markup)
+    ##########################################
 
 bot.polling()
