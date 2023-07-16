@@ -1,6 +1,15 @@
 import telebot
+import os
+
 from telebot import types
 from config import token
+from work_mySQL import sql_check, sql_create,sql_free_value,sql_free_date,sql_change_free_value
+from work_mySQL import sql_change_free_date,sql2_cheack
+from datetime import datetime
+from consol_work import get_profil
+    
+
+    
 
 
 bot = telebot.TeleBot(token)
@@ -32,7 +41,11 @@ vpn_markup.add('Оплата', 'VPN действует до','Промокод',
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
     bot.send_message(message.chat.id, "Добро пожаловать!", reply_markup=start_markup)
-
+    #регистрация пользователя
+    name = str(message.from_user.id)#получаем id пользователя
+    if sql_check(int(name))==-1:    #проверяем есть ли он в базе, если пользователя не существует, функция вернет -1
+        sql_create(name)            #записываем пользователя в базу
+    
 
 @bot.message_handler(content_types=['text'])
 def menu_navigation(message):
@@ -51,9 +64,9 @@ def menu_navigation(message):
     text_free   = 'Ты можешь получить бесплатный профиль на 7 дней, чтобы проверить наш сервис.\nХочешь получить бесплатный профиль?'
     
 
-    url_android = 'https://play.google.com/store/apps/details?id=com.wireguard.android&pli=1'
-    url_iphone  = 'https://apps.apple.com/us/app/wireguard/id1441195209?ls=1'
-    url_macos   = 'https://apps.apple.com/us/app/wireguard/id1451685025?ls=1&mt=12'
+    url_android = 'https://play.google.com/store/apps/details?id=com.wireguard.android'
+    url_iphone  = 'https://apps.apple.com/us/app/wireguard/id1441195209'
+    url_macos   = 'https://apps.apple.com/us/app/wireguard/id1451685025'
     url_site    = 'https://www.wireguard.com/install/'
 
     def text_itog():
@@ -82,8 +95,8 @@ def menu_navigation(message):
 
 
     #Кнопка free
-    elif message.text == 'Да':
-        bot.send_message(message.chat.id, "Вы выбрали 'да'", reply_markup=free_yes_markup)
+    #elif message.text == 'Да':
+    #    bot.send_message(message.chat.id, "Вы выбрали 'да'", reply_markup=free_yes_markup)
     ##########################################
     
 
@@ -129,6 +142,33 @@ def menu_navigation(message):
         bot.send_message(message.chat.id, message_text, parse_mode='Markdown')
         text_itog()
     ##########################################
+    elif message.text == 'Да':
+        name = str(message.from_user.id)
+        if int(sql_free_value(name))==0:
+            bot.send_message(message.from_user.id, "Почти готово, подожди 15 секунд")
+            sql_change_free_value(name) #заменяем проверочное значение на 1
+            sql_change_free_date(name)  #добавляем 7 дней бесплатного пользования
+            if sql2_cheack(name)==-1:   #Провереям не больше ли 5 файлов у пользователя
+                bot.send_message(message.from_user.id, "Ты уже получил 5 профилей, больше нельзя")
+            else:
+                id=str(sql2_cheack(name))
+                get_profil(id)        #получаем профиль
+                bot.send_message(message.from_user.id, "Готово:",reply_markup=free_yes_markup)
+                document = open(id+'.conf', 'rb')
+                bot.send_document(message.chat.id, document)
+        #elif sql_free_date(name) > datetime.now(): #бесплатное время ещё не закончилось
+            # if os.path.exists(name+'.conf'):       #дублируем файл
+            #     document = open(name+'.conf', 'rb')
+            #     bot.send_message(message.from_user.id, "Ты уже генерировал профиль, вот он:",reply_markup=free_yes_markup)
+            #     bot.send_document(message.chat.id, document)
+            # else:
+            #     bot.send_message(message.from_user.id, "Куда спешишь подожди") #защита от перегрузки
+        elif sql_free_date(name) < datetime.now(): #бесплатное время закончилось
+            bot.send_message(message.from_user.id, "Ты уже использовал бесплатный профиль, можешь воспользоваться обычным, по команде /vpn")
+
+
+
+
 
 
     #Случайные сообщения
@@ -136,4 +176,9 @@ def menu_navigation(message):
         bot.send_message(message.chat.id, "Я не понимаю эту команду",reply_markup=start_markup)
     ##########################################
 
-bot.polling()
+bot.polling(none_stop=True, interval=0)
+
+
+
+
+

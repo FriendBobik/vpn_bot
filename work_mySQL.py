@@ -13,13 +13,12 @@ def sql_connect():
         database=db_name_sql,
         cursorclass=pymysql.cursors.DictCursor
     )
-
 def sql_create(name):
     connection = sql_connect()
     with connection.cursor() as cursor:
         current_datetime = datetime.now()
-        insert_query = "INSERT INTO `user` (id, free_used, data_free_used, used, data_used, n1, n2, n3, n4, n5) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-        values = (name, 0, current_datetime, 0, current_datetime, 0, 0, 0, 0, 0)
+        insert_query = "INSERT INTO `user` (id, free_used, data_free_used, used, data_used) VALUES (%s, %s, %s, %s, %s)"
+        values = (name, 0, current_datetime, 0, current_datetime)
         cursor.execute(insert_query, values)
         connection.commit()
 
@@ -49,7 +48,11 @@ def sql_free_value(name):
         query = "SELECT free_used FROM user WHERE id = %s"
         cursor.execute(query, (name,))
         result=cursor.fetchall()
-        return result[0]['free_used']
+        if result:
+            return result[0]['free_used']
+        else:
+            return None
+    
 
 def sql_free_date(name):
     connection = sql_connect()
@@ -75,6 +78,33 @@ def sql_change_free_date(name):
         cursor.execute(query, (future_datetime, name,))
         connection.commit()
 
+def sql2(name):
+    connection = sql_connect()
+    with connection.cursor() as cursor:
+        query = "SELECT COUNT(`id_vpn`) as count FROM `user-idvpn` WHERE id = %s"
+        cursor.execute(query, (name,))
+        result = cursor.fetchone()
+        if result:
+            count = result['count'] # теперь обращаемся к элементу словаря по ключу, а не по индексу
+            return count
+        else:
+            return 0
+
+def sql2_cheack(name):
+    if sql2(name) < 5:
+        connection = sql_connect()
+        with connection.cursor() as cursor:
+            insert_query = "INSERT INTO `user-idvpn`( `id`, `work`) VALUES (%s, %s)"
+            values = (name,1)
+            cursor.execute(insert_query, values)
+            connection.commit()
+            id_of_new_row = cursor.lastrowid
+            return id_of_new_row
+    else:
+        return -1
+
+name=2
+sql2_cheack(name)
 
 
 
