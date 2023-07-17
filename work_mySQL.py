@@ -103,8 +103,5 @@ def sql2_cheack(name):
     else:
         return -1
 
-name=2
-sql2_cheack(name)
-
 
 

@@ -17,34 +17,34 @@ def get_profil(name):
 
  ssh = client.invoke_shell()
  #print(ssh.recv(3000))
- time.sleep(0.7)
+ time.sleep(0.5)
 
  ssh.send("./wireguard-install.sh\n")
  #print(ssh.recv(3000))
- time.sleep(0.7)
+ time.sleep(0.5)
 
  ssh.send("1\n")
  #print(ssh.recv(3000))
- time.sleep(0.7)
+ time.sleep(0.5)
 
  ssh.send(name+"\n")
  #print(ssh.recv(3000))
- time.sleep(0.7)
+ time.sleep(0.5)
 
 
  ssh.send("\n")
  #print(ssh.recv(3000))
- time.sleep(0.7)
+ time.sleep(0.5)
 
  ssh.send("\n")
  #print(ssh.recv(3000))
- time.sleep(0.7)
+ time.sleep(0.5)
 
 
  sftp = client.open_sftp()
  file_name = 'wg0-client-'+name+'.conf'
  remote_file_path = '/root/'+file_name
- local_file_path = name+'.conf'
+ local_file_path ='prof/'+name+'.conf'
  sftp.get(remote_file_path, local_file_path)
  sftp.close()
  vpn_give=True
@@ -53,12 +53,8 @@ def get_profil(name):
 
  ssh.close()
 
-name="1"
-get_profil(name)
-name="2"
-get_profil(name)
-name="3"
-get_profil(name)
+
+
 
 
  

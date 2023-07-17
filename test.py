@@ -144,27 +144,51 @@ def menu_navigation(message):
     ##########################################
     elif message.text == 'Да':
         name = str(message.from_user.id)
-        if int(sql_free_value(name))==0:
+        if int(sql_free_value(name))==0 :
             bot.send_message(message.from_user.id, "Почти готово, подожди 15 секунд")
             sql_change_free_value(name) #заменяем проверочное значение на 1
             sql_change_free_date(name)  #добавляем 7 дней бесплатного пользования
-            if sql2_cheack(name)==-1:   #Провереям не больше ли 5 файлов у пользователя
+            id=str(sql2_cheack(name))
+            if id==-1:   #Провереям не больше ли 5 файлов у пользователя
                 bot.send_message(message.from_user.id, "Ты уже получил 5 профилей, больше нельзя")
             else:
-                id=str(sql2_cheack(name))
                 get_profil(id)        #получаем профиль
                 bot.send_message(message.from_user.id, "Готово:",reply_markup=free_yes_markup)
-                document = open(id+'.conf', 'rb')
+                document = open('prof/'+id+'.conf', 'rb')
                 bot.send_document(message.chat.id, document)
-        #elif sql_free_date(name) > datetime.now(): #бесплатное время ещё не закончилось
-            # if os.path.exists(name+'.conf'):       #дублируем файл
-            #     document = open(name+'.conf', 'rb')
-            #     bot.send_message(message.from_user.id, "Ты уже генерировал профиль, вот он:",reply_markup=free_yes_markup)
-            #     bot.send_document(message.chat.id, document)
-            # else:
-            #     bot.send_message(message.from_user.id, "Куда спешишь подожди") #защита от перегрузки
+
+
+        elif int(sql_free_value(name))==1 and sql_free_date(name) > datetime.now():
+            bot.send_message(message.from_user.id, "Почти готово, подожди 5 секунд")
+            id=str(sql2_cheack(name))
+            if int(id)==-1:   #Провереям не больше ли 5 файлов у пользователя
+                bot.send_message(message.from_user.id, "Ты уже получил 5 профилей, больше нельзя")
+            else:
+                get_profil(id)        #получаем профиль
+                bot.send_message(message.from_user.id, "Готово:",reply_markup=free_yes_markup)
+                document = open('prof/'+id+'.conf', 'rb')
+                bot.send_document(message.chat.id, document)
+
         elif sql_free_date(name) < datetime.now(): #бесплатное время закончилось
             bot.send_message(message.from_user.id, "Ты уже использовал бесплатный профиль, можешь воспользоваться обычным, по команде /vpn")
+
+
+    elif message.text == 'Ещё':
+        name = str(message.from_user.id)
+        if int(sql_free_value(name))==1 and sql_free_date(name) > datetime.now():
+            id=str(sql2_cheack(name))
+            if int(id)==-1:   #Провереям не больше ли 5 файлов у пользователя
+                bot.send_message(message.from_user.id, "Ты уже получил 5 профилей, больше нельзя")
+            else:
+                bot.send_message(message.from_user.id, "Почти готово, подожди 5 секунд")
+                get_profil(id)        #получаем профиль
+                bot.send_message(message.from_user.id, "Готово:",reply_markup=free_yes_markup)
+                document = open('prof/'+id+'.conf', 'rb')
+                bot.send_document(message.chat.id, document)
+
+        elif sql_free_date(name) < datetime.now(): #бесплатное время закончилось
+            bot.send_message(message.from_user.id, "Ты уже использовал бесплатный профиль, можешь воспользоваться обычным, по команде /vpn")
+
 
 
 
