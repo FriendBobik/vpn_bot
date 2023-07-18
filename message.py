@@ -2,7 +2,7 @@ import telebot
 import os
 
 from telebot import types
-from config import token,promocode
+from config import token,promocode,user_name_tg
 from work_mySQL import sql_check, sql_create,sql_free_value,sql_free_date,sql_change_free_value
 from work_mySQL import sql_change_free_date,sql2_cheack,sql_date,sql_return_prof,sql_promocode
 from datetime import datetime
@@ -43,7 +43,7 @@ pay_markup.add('1 неделя - "a" рублей', '1 месяц - "b" рубл
 
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
-    bot.send_message(message.chat.id, "Добро пожаловать!", reply_markup=start_markup)
+    bot.send_message(message.chat.id, "Добро пожаловать! Выбери кнопку на клавиатуре", reply_markup=start_markup)
     #регистрация пользователя
     name = str(message.from_user.id)#получаем id пользователя
     if sql_check(int(name))==-1:    #проверяем есть ли он в базе, если пользователя не существует, функция вернет -1
@@ -61,10 +61,10 @@ def menu_navigation(message):
     text5       = 'Скачайте профиль и откройте его в WireGuard'
     text6       = 'Выбери "Импорт из файла или архива"'
     text7       = 'В предложенном меню открой папку Загрузки / Telegram, и выбери сохраненный файл.'
-    text8       = 'После импорта профиля, нажмите на него и включите VPN.\nВсе работает!!!'
-    text9       = 'Если у вас возникли проблемы, напишите нам в телеграмме\n(тут будет ссылка)'
+    text8       = 'После импорта профиля, нажмите на него и включите VPN.\nВсе работает!!! Не забывай 1 профиль = 1 устройство'
+    text9       = 'Если у вас возникли проблемы, напишите нам в телеграмме\n'+user_name_tg
     text10      = 'Скачай WireGuard с'
-    text_free   = 'Ты можешь получить бесплатный профиль на 7 дней, чтобы проверить наш сервис.\nХочешь получить бесплатный профиль?'
+    text_free   = 'Ты можешь получить бесплатный VPN на 7 дней, чтобы проверить наш сервис. 1 профиль = 1 утройство, так что если понадобится больше 1, нажми кнопку ещё \nХочешь получить бесплатный профиль?'
     
 
     url_android = 'https://play.google.com/store/apps/details?id=com.wireguard.android'

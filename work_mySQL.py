@@ -77,7 +77,6 @@ def sql_change_free_value(name):
 
 
 
-
 def sql2(name):
     connection = sql_connect()
     with connection.cursor() as cursor:
