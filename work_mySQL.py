@@ -119,3 +119,21 @@ def sql_return_prof(name):
         result=cursor.fetchall()
         values = [item['id_vpn'] for item in result]
         return values
+
+
+def sql_change_value(name):
+    connection = sql_connect()
+    with connection.cursor() as cursor:
+        query = "UPDATE user SET used=1 WHERE id= %s"
+        cursor.execute(query, (name,))
+        connection.commit()
+
+
+def sql_change_free_date(name, date): #date - количество дней
+    current_datetime = datetime.now()
+    future_datetime = current_datetime + timedelta(days=date)
+    connection = sql_connect()
+    with connection.cursor() as cursor:
+        query = "UPDATE user SET data_used=%s WHERE id= %s"
+        cursor.execute(query, (future_datetime, name,))
+        connection.commit()

@@ -35,6 +35,9 @@ devices_markup.add('Android','Iphone', 'Windows', 'MacOS', 'Linux', 'В глав
 
 vpn_markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
 vpn_markup.add('Оплата', 'VPN действует до','Промокод','В главное меню')
+
+pay_markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+pay_markup.add('1 неделя - "a" рублей', '1 месяц - "b" рублей', '3 месяца - "c" рублей','В главное меню')
 ##########################################
 
 
@@ -102,9 +105,20 @@ def menu_navigation(message):
 
     #Кнопка VPN
     elif message.text == 'Оплата':
-        bot.send_message(message.chat.id, "Test оплата", reply_markup=back_markup)
+        bot.send_message(message.from_user.id, "Выбери один из вариантов:",reply_markup=pay_markup)
+        if message.text == '1 неделя - "a" рублей':
+            return None
+        elif message.text == '1 месяц - "b" рублей':
+            return None
+        elif message.text == '3 месяца - "c" рублей':
+            return None
     elif message.text == 'VPN действует до':
-        bot.send_message(message.chat.id, "Test VPN действует до", reply_markup=back_markup)
+        name = str(message.from_user.id)
+        data=sql_date(name)
+        if data > datetime.now():
+            bot.send_message(message.from_user.id, data,reply_markup=free_yes_markup)
+        else:
+            bot.send_message(message.from_user.id, "Ты не оплатил подписку",reply_markup=back_markup)
     elif message.text == 'Промокод':
         bot.send_message(message.chat.id, "Ведите промокод:", reply_markup=back_markup)
     ##########################################
@@ -200,13 +214,7 @@ def menu_navigation(message):
             bot.send_message(message.from_user.id, "Бесплатный VPN закончился, вопсользуйся кнопкой VPN",reply_markup=back_markup)
     
     
-    elif message.text == 'VPN действует до':
-        name = str(message.from_user.id)
-        data=sql_date(name)
-        if data > datetime.now():
-            bot.send_message(message.from_user.id, data,reply_markup=free_yes_markup)
-        else:
-            bot.send_message(message.from_user.id, "Ты не оплатил подписку",reply_markup=back_markup)
+    
 
     elif message.text == 'Мои профили':
         name = str(message.from_user.id)
@@ -221,6 +229,8 @@ def menu_navigation(message):
 
 
     
+        
+        
 
 
 
