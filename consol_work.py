@@ -56,7 +56,6 @@ def get_profil(name):
 
 
 
-
  
 
   

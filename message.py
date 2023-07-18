@@ -2,9 +2,9 @@ import telebot
 import os
 
 from telebot import types
-from config import token
+from config import token,promocode
 from work_mySQL import sql_check, sql_create,sql_free_value,sql_free_date,sql_change_free_value
-from work_mySQL import sql_change_free_date,sql2_cheack,sql_date,sql_return_prof
+from work_mySQL import sql_change_free_date,sql2_cheack,sql_date,sql_return_prof,sql_promocode
 from datetime import datetime
 from consol_work import get_profil
     
@@ -22,7 +22,7 @@ free_markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
 free_markup.add('Да', 'В главное меню')
 
 free_yes_markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-free_yes_markup.add('Ещё', 'Бесплатный VPN действует до','В главное меню')
+free_yes_markup.add('Ещё','Мои профили', 'Бесплатный VPN действует до','В главное меню')
 
 info_markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
 info_markup.add('О проэкте', 'Правила', 'В главное меню')
@@ -34,7 +34,7 @@ devices_markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
 devices_markup.add('Android','Iphone', 'Windows', 'MacOS', 'Linux', 'В главное меню')
 
 vpn_markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-vpn_markup.add('Оплата', 'VPN действует до','Промокод','В главное меню')
+vpn_markup.add('Оплата', 'VPN действует до','Промокод', 'Мои профили','В главное меню')
 
 pay_markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
 pay_markup.add('1 неделя - "a" рублей', '1 месяц - "b" рублей', '3 месяца - "c" рублей','В главное меню')
@@ -86,9 +86,13 @@ def menu_navigation(message):
     
     #Стартовое меню
     elif message.text == 'Free':
-        bot.send_message(message.chat.id, text_free, reply_markup=free_markup)
+        name = str(message.from_user.id)
+        if sql_free_value(name)==0:
+            bot.send_message(message.chat.id, text_free, reply_markup=free_markup)
+        else:
+            bot.send_message(message.chat.id, "У вас уже есть профиль", reply_markup=free_yes_markup)
     elif message.text == 'VPN':
-        bot.send_message(message.chat.id, "Test VPN", reply_markup=vpn_markup)
+        bot.send_message(message.chat.id, "Это меню ещё не до конца функционально, здесь не работает кнопка Оплата, поэтому для получения профиля VPN воспользуйся кнопкой FREE, а здесь можешь ввести промокод :)", reply_markup=vpn_markup)
     elif message.text == 'Информация':
         bot.send_message(message.chat.id, "Выберите один из пунктов", reply_markup=info_markup)
     elif message.text == 'Инструкция':
@@ -105,18 +109,18 @@ def menu_navigation(message):
 
     #Кнопка VPN
     elif message.text == 'Оплата':
-        bot.send_message(message.from_user.id, "Выбери один из вариантов:",reply_markup=pay_markup)
-        if message.text == '1 неделя - "a" рублей':
+        bot.send_message(message.from_user.id, "Выбери один из вариантов: От нажатия на кнопки ничего не происходит, это норм",reply_markup=pay_markup)
+    elif message.text == '1 неделя - "a" рублей':
             return None
-        elif message.text == '1 месяц - "b" рублей':
+    elif message.text == '1 месяц - "b" рублей':
             return None
-        elif message.text == '3 месяца - "c" рублей':
+    elif message.text == '3 месяца - "c" рублей':
             return None
     elif message.text == 'VPN действует до':
         name = str(message.from_user.id)
         data=sql_date(name)
         if data > datetime.now():
-            bot.send_message(message.from_user.id, data,reply_markup=free_yes_markup)
+            bot.send_message(message.from_user.id, data,reply_markup=vpn_markup)
         else:
             bot.send_message(message.from_user.id, "Ты не оплатил подписку",reply_markup=back_markup)
     elif message.text == 'Промокод':
@@ -126,9 +130,9 @@ def menu_navigation(message):
 
     #Кнопка информация
     elif message.text == 'О проэкте':
-        bot.send_message(message.chat.id, "Test о проэкте", reply_markup=back_markup)
+        bot.send_message(message.chat.id, "Test о проэкте")
     elif message.text == 'Правила':
-        bot.send_message(message.chat.id, "Test правила", reply_markup=back_markup)
+        bot.send_message(message.chat.id, "Test правила")
     ##########################################
 
 
@@ -159,13 +163,13 @@ def menu_navigation(message):
     elif message.text == 'Да':
         name = str(message.from_user.id)
         if int(sql_free_value(name))==0 :
+            id=str(sql2_cheack(name))
             if id==-1:   #Провереям не больше ли 5 файлов у пользователя
                 bot.send_message(message.from_user.id, "Ты уже получил 5 профилей, больше нельзя")
             else:
                 bot.send_message(message.from_user.id, "Почти готово, подожди 5 секунд")
                 sql_change_free_value(name) #заменяем проверочное значение на 1
                 sql_change_free_date(name)  #добавляем 7 дней бесплатного пользования
-                id=str(sql2_cheack(name))
                 get_profil(id)        #получаем профиль
                 bot.send_message(message.from_user.id, "Готово:",reply_markup=free_yes_markup)
                 document = open('prof/'+id+'.conf', 'rb')
@@ -176,7 +180,7 @@ def menu_navigation(message):
             
             id=str(sql2_cheack(name))
             if int(id)==-1:   #Провереям не больше ли 5 файлов у пользователя
-                bot.send_message(message.from_user.id, "Ты уже получил 5 профилей, больше нельзя",reply_markup=back_markup)
+                bot.send_message(message.from_user.id, "Ты уже получил 5 профилей, больше нельзя")
             else:
                 bot.send_message(message.from_user.id, "Почти готово, подожди 5 секунд")
                 get_profil(id)        #получаем профиль
@@ -193,7 +197,7 @@ def menu_navigation(message):
         if int(sql_free_value(name))==1 and sql_free_date(name) > datetime.now():
             id=str(sql2_cheack(name))
             if int(id)==-1:   #Провереям не больше ли 5 файлов у пользователя
-                bot.send_message(message.from_user.id, "Ты уже получил 5 профилей, больше нельзя",reply_markup=back_markup)
+                bot.send_message(message.from_user.id, "Ты уже получил 5 профилей, больше нельзя")
             else:
                 bot.send_message(message.from_user.id, "Почти готово, подожди 5 секунд")
                 get_profil(id)        #получаем профиль
@@ -220,15 +224,18 @@ def menu_navigation(message):
         name = str(message.from_user.id)
         values = sql_return_prof(name)
         if values:
-            bot.send_message(message.from_user.id, "Твои профили:",reply_markup=back_markup)
+            bot.send_message(message.from_user.id, "Твои профили:")
             for value in values:
                 document = open('prof/'+str(value)+'.conf', 'rb')
                 bot.send_document(message.chat.id, document)
         else:
-            bot.send_message(message.from_user.id, "У тебя нет профилей",reply_markup=back_markup)
-
-
+            bot.send_message(message.from_user.id, "У тебя нет профилей")
     
+    elif message.text == promocode:
+        name = str(message.from_user.id)
+        sql_promocode(name)
+        bot.send_message(message.from_user.id, "Промокод активирован",reply_markup=vpn_markup)
+        
         
         
 
