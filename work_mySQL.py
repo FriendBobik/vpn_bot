@@ -103,5 +103,19 @@ def sql2_cheack(name):
     else:
         return -1
 
+def sql_date(name):
+    connection = sql_connect()
+    with connection.cursor() as cursor:
+        query = "SELECT data_used FROM user WHERE id = %s"
+        cursor.execute(query, (name,))
+        result=cursor.fetchall()
+        return result[0]['data_used']
 
-
+def sql_return_prof(name):
+    connection=sql_connect()
+    with connection.cursor() as cursor:
+        query = "SELECT id_vpn FROM `user-idvpn` WHERE id = %s"
+        cursor.execute(query, (name,))
+        result=cursor.fetchall()
+        values = [item['id_vpn'] for item in result]
+        return values
