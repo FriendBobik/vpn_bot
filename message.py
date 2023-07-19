@@ -22,7 +22,7 @@ free_markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
 free_markup.add('Да', 'В главное меню')
 
 free_yes_markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-free_yes_markup.add('Ещё','Мои профили', 'Бесплатный VPN действует до','В главное меню')
+free_yes_markup.add('Ещё','Мои профили', 'Инструкция', 'Бесплатный VPN действует до','В главное меню')
 
 info_markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
 info_markup.add('О проэкте', 'Правила', 'В главное меню')
